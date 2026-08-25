@@ -6,3 +6,4 @@
 - No human participant identity or content was generated.
 - Declared the package-local `wellmanifest_governance` pytest plugin while
   retaining the standard-required addopts binding.
+- Closed after integration at `16844aa8c277e8b96f4cca8aca57f4d42ec2a4eb`.

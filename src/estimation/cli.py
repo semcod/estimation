@@ -24,7 +24,7 @@ def _context(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--correlation-id", default=os.getenv("SUBACTOR_CORRELATION_ID"))
     parser.add_argument("--store", default=DEFAULT_STORE)
     parser.add_argument("--events", default=DEFAULT_EVENTS)
-    parser.add_argument("--interval", type=float, default=0.1)
+    parser.add_argument("--interval", type=float, default=1.0)
 
 
 def _parser() -> argparse.ArgumentParser:

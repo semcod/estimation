@@ -1,0 +1,71 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-008",
+  "summary": "Reduce Process URI estimation overhead",
+  "workstream": "application",
+  "classification": {
+    "kind": "SERVICE",
+    "priority": "P2",
+    "origin": "health"
+  },
+  "allowedPaths": ["project/ticket-008/**", "TODO.md", "project/TICKETS.md", "src/**", "tests/**"],
+  "delivery": {
+    "acceptedBaseSha": "8dd7bc814b0fa987e968524745913771910560c7",
+    "targetBranch": "main",
+    "outcome": "Process URI estimation samples at 1 Hz by default and extends its event hash chain from a bounded tail read.",
+    "nonGoals": [
+      "Change Process URI authorization or scheduling authority.",
+      "Change the persisted sample or event schema."
+    ],
+    "complexity": "S",
+    "estimatedMinutes": 25,
+    "budgets": {
+      "maxImplementationFiles": 5,
+      "maxAffectedComponents": 1,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Keep estimation advisory and append-only; reduce sampling frequency and resolve only the final JSONL record with positional reads.",
+      "components": [
+        {
+          "name": "estimation-runtime",
+          "paths": ["src/**", "tests/**"]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Restore the 0.1 second defaults and sequential last-event scan; stored JSONL remains compatible."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-02",
+        "commands": ["PYTHONPATH=src python -m pytest"],
+        "evidence": "Signature regression test asserts one-second defaults."
+      },
+      {
+        "criterion": "AC-03",
+        "commands": ["PYTHONPATH=src python -m pytest"],
+        "evidence": "Tail-read regression test limits the final append to one 4096-byte pread."
+      },
+      {
+        "criterion": "AC-05",
+        "commands": ["PYTHONPATH=src ./project/governance-check.sh"],
+        "evidence": "Governance report must return GOV-PASS."
+      }
+    ]
+  },
+  "forbiddenPaths": ["project/ticket-*/user-*.md"],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null
+}

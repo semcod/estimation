@@ -14,10 +14,7 @@
     "project/TICKETS.md",
     "README.md",
     "CHANGELOG.md",
-    ".gitignore",
-    ".cursor/**",
-    ".governance/required-checks.json",
-    "governance/required-checks.json"
+    ".governance/required-checks.json"
   ],
   "forbiddenPaths": ["project/ticket-*/user-*.md"],
   "stacks": [],

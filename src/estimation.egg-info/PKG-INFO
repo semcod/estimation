@@ -1,0 +1,21 @@
+Metadata-Version: 2.4
+Name: estimation
+Version: 0.1.0
+Summary: Historical CPU, memory, I/O and duration estimates for ticket-bound URI processes
+Author: Semcod
+License-Expression: Apache-2.0
+Keywords: scheduling,resources,profiling,uri,process
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: psutil>=5.9
+Provides-Extra: deep
+Requires-Dist: metrun>=0.1.15; extra == "deep"
+Provides-Extra: dev
+Requires-Dist: pytest>=8; extra == "dev"
+
+# estimation
+
+Resource estimation for ticket-bound URI processes.
+
+This repository is governed by `wellmanifest/new-project` and adopts the
+`wellmanifest/logs` event contract. Runtime ownership remains in `semcod`.

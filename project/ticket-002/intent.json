@@ -1,0 +1,65 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-002",
+  "summary": "Measure and estimate URI process resources",
+  "workstream": "application",
+  "classification": {
+    "kind": "SERVICE",
+    "priority": "P2",
+    "origin": "health"
+  },
+  "placement": {
+    "home": "semcod",
+    "runtimeOwner": "semcod",
+    "shape": "runtime_service",
+    "adopt": ["wellmanifest/new-project", "wellmanifest/logs"]
+  },
+  "allowedPaths": ["project/ticket-002/**", "TODO.md", "project/TICKETS.md", "src/**", "tests/**"],
+  "forbiddenPaths": ["project/ticket-*/user-*.md"],
+  "stacks": [],
+  "dependsOn": ["ticket-001"],
+  "conflictsWith": [],
+  "integrationTicket": "ticket-001",
+  "delivery": {
+    "acceptedBaseSha": "33ffdcdfcc702d720eb12e6aec84bf6c9dbe9ce3",
+    "targetBranch": "main",
+    "outcome": "A tested local collector, append-only store and p50/p90 estimator for Process URI scheduling.",
+    "nonGoals": [
+      "Control or authorize the measured process",
+      "Capture command output, argument values or environment values",
+      "Apply production scheduling changes"
+    ],
+    "complexity": "L",
+    "estimatedMinutes": 30,
+    "budgets": {
+      "maxImplementationFiles": 15,
+      "maxAffectedComponents": 5,
+      "maxPublicInterfaceChanges": 3,
+      "maxRuntimeDependencies": 1
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Separate process-tree collection, immutable storage and statistical planning; use p90 and explicit confidence for future scheduling.",
+      "components": [
+        {"name": "resource-model", "paths": ["src/estimation/model.py"]},
+        {"name": "collector", "paths": ["src/estimation/monitor.py"]},
+        {"name": "storage", "paths": ["src/estimation/store.py"]},
+        {"name": "statistics", "paths": ["src/estimation/stats.py"]},
+        {"name": "interface-and-tests", "paths": ["src/estimation/__init__.py", "src/estimation/__main__.py", "src/estimation/cli.py", "tests/**"]}
+      ],
+      "responsibilityChanges": true,
+      "interfaceChanges": ["Implement estimation run/observe", "Implement estimation report/estimate", "Expose Python API"],
+      "dataChanges": ["Append samples.jsonl", "Append hash-chained wellmanifest events"],
+      "ui": {"impact": "none", "states": [], "evidence": []},
+      "rollback": "Remove the local package and its append-only baseline files; measured processes are not mutated by rollback."
+    },
+    "runtimeDependencies": ["psutil>=5.9"],
+    "validation": [
+      {"criterion": "AC-02", "commands": ["python -m pytest -q tests/test_estimation.py"], "evidence": "Command and PID measurements are bounded and redact arguments"},
+      {"criterion": "AC-03", "commands": ["python -m pytest -q tests/test_estimation.py"], "evidence": "Two appends form an ordered hash chain"},
+      {"criterion": "AC-04", "commands": ["estimation report --store data/baseline.samples.jsonl"], "evidence": "p50/p90 report by Process URI"},
+      {"criterion": "AC-05", "commands": ["estimation estimate --store data/baseline.samples.jsonl --process-uri process://semcod/estimation/test --quantity 10 --parallelism 2"], "evidence": "Conservative workload estimate"},
+      {"criterion": "AC-06", "commands": ["python -m pytest -q"], "evidence": "Complete package tests"}
+    ]
+  }
+}

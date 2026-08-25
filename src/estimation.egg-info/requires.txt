@@ -1,0 +1,7 @@
+psutil>=5.9
+
+[deep]
+metrun>=0.1.15
+
+[dev]
+pytest>=8

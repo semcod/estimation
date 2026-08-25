@@ -1,0 +1,2 @@
+[console_scripts]
+estimation = estimation.cli:main

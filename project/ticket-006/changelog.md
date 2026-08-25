@@ -5,3 +5,4 @@
 - Initial governance scaffold created.
 - No human participant identity or content was generated.
 - Added a fail-closed pytest bridge for the configured governance gate.
+- Closed after integration at `99bc3e58a56dca025bfb340bf7338ae0b0b07494`.

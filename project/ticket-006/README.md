@@ -2,8 +2,8 @@
 
 - **ID**: ticket-006
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
-- **Workflow state**: EDIT
+- **Status**: DONE
+- **Workflow state**: DONE
 - **Created**: 2026-08-25
 
 ## Goal and scope
@@ -23,3 +23,9 @@ fail closed and avoid recursive invocation.
 
 - Human participant: unresolved; no user-* file was created by this script.
 - Agent participant: [ai-codex.md](ai-codex.md)
+
+## Closure evidence
+
+- Trusted local integration SHA: `99bc3e58a56dca025bfb340bf7338ae0b0b07494`.
+- Plain pytest loaded the bridge, ran governance and passed `8/8` tests.
+- Explicit governance check passed with no findings.

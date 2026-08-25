@@ -22,7 +22,7 @@
       "note": "Ruleset lives outside the repository and cannot be read from CI without admin API. Align it manually with requiredCheckNames; CI gates the workflow side only."
     }
   ],
-  "repository": "wellmanifest/new-project",
+  "repository": "semcod/estimation",
   "requiredCheckNames": [
     "test",
     "windows-governance"

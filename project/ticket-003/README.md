@@ -2,8 +2,8 @@
 
 - **ID**: ticket-003
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
-- **Workflow state**: EDIT
+- **Status**: DONE
+- **Workflow state**: DONE
 - **Created**: 2026-08-25
 
 ## Goal and scope
@@ -24,3 +24,9 @@ configuration required by `wellmanifest/new-project`.
 
 - Human participant: unresolved; no user-* file was created by this script.
 - Agent participant: [ai-codex.md](ai-codex.md)
+
+## Closure evidence
+
+- Trusted local integration SHA: `fa28bd3df99b925d481897a9997d46c3f9d84113`.
+- Post-merge check: repository governance passed with 0 errors and 0 warnings
+  after the required CI workflow was integrated.

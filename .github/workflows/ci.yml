@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install package
+        run: python -m pip install -e '.[dev]'
+      - name: Run functional tests
+        run: python -m pytest -q -o addopts=
+
+  windows-governance:
+    name: windows-governance
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run governance gate
+        shell: cmd
+        run: project\governance-check.bat

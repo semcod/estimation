@@ -8,15 +8,15 @@
 
 ## Goal and scope
 
-Remove the generated pytest `addopts` reference to a plugin that is not
-distributed by the adopted standard. Governance remains enforced by the
-repository gate and CI; ordinary package tests must run in a clean venv.
+Retain the governance-required pytest `addopts` and declare a local
+`wellmanifest_governance` module. A dependent application ticket implements
+the plugin so ordinary package tests run in a clean venv.
 
 ## Acceptance criteria
 
 - [x] AC-01: The session request authorizes the corrective change.
-- [x] AC-02: Plain `python -m pytest -q` works without an undeclared plugin.
-- [x] AC-03: The independent governance gate still passes.
+- [x] AC-02: Package metadata declares the local plugin module.
+- [x] AC-03: Pytest retains the governance-required plugin binding.
 
 ## Participants
 

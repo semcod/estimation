@@ -23,8 +23,13 @@ estimation = "estimation.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools]
+package-dir = {"" = "src"}
+py-modules = ["wellmanifest_governance"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "-p wellmanifest_governance"
 
 [tool.wellmanifest]
 standard = "0.18.7"

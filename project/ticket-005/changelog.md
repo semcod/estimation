@@ -4,4 +4,5 @@
 
 - Initial governance scaffold created.
 - No human participant identity or content was generated.
-- Removed the unavailable `wellmanifest_governance` pytest addopts plugin.
+- Declared the package-local `wellmanifest_governance` pytest plugin while
+  retaining the standard-required addopts binding.

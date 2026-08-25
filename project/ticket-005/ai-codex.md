@@ -9,19 +9,20 @@ ticket: ticket-005
 ## Understanding
 
 Functional tests pass only when overriding generated pytest addopts because
-`wellmanifest_governance` is absent from both the standard and environments.
+`wellmanifest_governance` is absent from both the standard and environments;
+the package therefore needs to provide the bounded plugin locally.
 
 ## Execution plan
 
-1. Remove the unavailable plugin from pytest addopts.
-2. Run plain pytest in the isolated environment.
-3. Run the independent governance gate.
+1. Retain the governance-required pytest addopts.
+2. Declare the local plugin module in package metadata.
+3. Implement the plugin in a dependent application ticket.
 
 ## Actual changes
 
 - Initialized the bounded ticket and recorded SESSION_EXECUTION_AUTHORIZATION
   from the request to execute this work.
-- Removed the undeclared pytest plugin requirement.
+- Declared a package-local governance plugin contract.
 
 ## Blockers
 

@@ -1,0 +1,34 @@
+{
+  "schema": "semcod.estimation.operations/v1",
+  "version": "0.1.0",
+  "operations": [
+    {
+      "id": "measure",
+      "processUri": "estimation://process/command/measure",
+      "kind": "command",
+      "risk": "R1",
+      "effect": "Run a caller-authorized command and append one bounded resource sample."
+    },
+    {
+      "id": "observe",
+      "processUri": "estimation://process/command/observe",
+      "kind": "command",
+      "risk": "R1",
+      "effect": "Observe a local PID tree without controlling it and append one bounded resource sample."
+    },
+    {
+      "id": "report",
+      "processUri": "estimation://history/query/report",
+      "kind": "query",
+      "risk": "R0",
+      "effect": "Aggregate historical samples without executing work."
+    },
+    {
+      "id": "estimate",
+      "processUri": "estimation://history/query/estimate",
+      "kind": "query",
+      "risk": "R0",
+      "effect": "Predict a bounded resource envelope for a quantity and parallelism."
+    }
+  ]
+}

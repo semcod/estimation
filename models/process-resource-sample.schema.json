@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://semcod.dev/schemas/estimation/process-resource-sample.v1.json",
+  "title": "Process resource sample",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "sample_id", "process_uri", "process_key", "ticket_id",
+    "correlation_id", "started_at", "finished_at", "duration_seconds",
+    "cpu_user_seconds", "cpu_system_seconds", "effective_cpu_cores",
+    "peak_rss_bytes", "read_bytes", "write_bytes", "max_processes",
+    "sample_count", "exit_code", "outcome", "program", "argv_sha256",
+    "host_profile", "raw_output_included", "secret_material_included"
+  ],
+  "properties": {
+    "schema": {"const": "semcod.estimation.sample/v1"},
+    "sample_id": {"type": "string", "pattern": "^sample:[a-f0-9]{32}$"},
+    "process_uri": {"type": "string", "minLength": 3, "maxLength": 512},
+    "process_key": {"type": "string", "minLength": 3, "maxLength": 320},
+    "ticket_id": {"type": ["string", "null"], "maxLength": 128},
+    "correlation_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "started_at": {"type": "string", "format": "date-time"},
+    "finished_at": {"type": "string", "format": "date-time"},
+    "duration_seconds": {"type": "number", "minimum": 0},
+    "cpu_user_seconds": {"type": "number", "minimum": 0},
+    "cpu_system_seconds": {"type": "number", "minimum": 0},
+    "effective_cpu_cores": {"type": "number", "minimum": 0},
+    "peak_rss_bytes": {"type": "integer", "minimum": 0},
+    "read_bytes": {"type": "integer", "minimum": 0},
+    "write_bytes": {"type": "integer", "minimum": 0},
+    "max_processes": {"type": "integer", "minimum": 0},
+    "sample_count": {"type": "integer", "minimum": 1},
+    "exit_code": {"type": ["integer", "null"]},
+    "outcome": {"enum": ["succeeded", "failed", "interrupted", "observed"]},
+    "program": {"type": "string", "minLength": 1, "maxLength": 128},
+    "argv_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "host_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["host_id", "system", "machine", "cpu_count", "memory_bytes"],
+      "properties": {
+        "host_id": {"type": "string", "pattern": "^host:[a-f0-9]{16}$"},
+        "system": {"type": "string", "maxLength": 32},
+        "machine": {"type": "string", "maxLength": 32},
+        "cpu_count": {"type": "integer", "minimum": 1},
+        "memory_bytes": {"type": "integer", "minimum": 1}
+      }
+    },
+    "raw_output_included": {"const": false},
+    "secret_material_included": {"const": false}
+  }
+}

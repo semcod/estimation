@@ -1,0 +1,68 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-001",
+  "summary": "Process URI estimation package contract",
+  "workstream": "integration",
+  "classification": {
+    "kind": "SERVICE",
+    "priority": "P2",
+    "origin": "health"
+  },
+  "placement": {
+    "home": "semcod",
+    "runtimeOwner": "semcod",
+    "shape": "runtime_service",
+    "adopt": ["wellmanifest/new-project", "wellmanifest/logs"]
+  },
+  "allowedPaths": [
+    "project/ticket-001/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "VERSION",
+    "pyproject.toml",
+    "models/**",
+    "operations/**"
+  ],
+  "forbiddenPaths": ["project/ticket-*/user-*.md"],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "c5e4cc039bb3b41e4cc0439781a686e0dc6fd912",
+    "targetBranch": "main",
+    "outcome": "A local installable package contract and empirical baseline; no remote publication.",
+    "nonGoals": [
+      "Grant execution authority",
+      "Persist command arguments, output, environment values or secrets",
+      "Replace metrun function-level profiling"
+    ],
+    "complexity": "M",
+    "estimatedMinutes": 30,
+    "budgets": {
+      "maxImplementationFiles": 9,
+      "maxAffectedComponents": 3,
+      "maxPublicInterfaceChanges": 2,
+      "maxRuntimeDependencies": 1
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Append privacy-preserving OS process-tree samples and estimate conservative p50/p90 scheduling envelopes by canonical Process URI.",
+      "components": [
+        {"name": "package-contract", "paths": ["pyproject.toml", "operations/**"]},
+        {"name": "sample-model", "paths": ["models/**"]}
+      ],
+      "responsibilityChanges": true,
+      "interfaceChanges": ["Add the estimation CLI", "Add four estimation Process URIs"],
+      "dataChanges": ["Add semcod.estimation.sample/v1 append-only records"],
+      "ui": {"impact": "none", "states": [], "evidence": []},
+      "rollback": "Remove the package before publication; no external system state is mutated."
+    },
+    "runtimeDependencies": ["psutil>=5.9"],
+    "validation": [
+      {"criterion": "AC-02", "commands": ["python -m pip install -e ."], "evidence": "CLI import and entry point installation"},
+      {"criterion": "AC-03", "commands": ["python -m json.tool models/process-resource-sample.schema.json"], "evidence": "Valid JSON schema document"},
+      {"criterion": "AC-04", "commands": ["python -m json.tool operations/index.json"], "evidence": "Valid operation catalog"}
+    ]
+  }
+}

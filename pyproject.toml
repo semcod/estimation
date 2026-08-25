@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "estimation"
+version = "0.1.0"
+description = "Historical CPU, memory, I/O and duration estimates for ticket-bound URI processes"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+authors = [{name = "Semcod"}]
+keywords = ["scheduling", "resources", "profiling", "uri", "process"]
+dependencies = ["psutil>=5.9"]
+
+[project.optional-dependencies]
+deep = ["metrun>=0.1.15"]
+dev = ["pytest>=8"]
+
+[project.scripts]
+estimation = "estimation.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-p wellmanifest_governance"
+
+[tool.wellmanifest]
+standard = "0.18.7"
+revision = "c6cf798727229df252fadfe02c0da36757a40673"
+gate = "./project/governance-check.sh"
+
+[tool.estimation]
+store = "data/samples.jsonl"
+events = "logs/estimation.jsonl"
+sample_interval_seconds = 0.1

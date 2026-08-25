@@ -2,8 +2,8 @@
 
 - **ID**: ticket-004
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
-- **Workflow state**: EDIT
+- **Status**: DONE
+- **Workflow state**: DONE
 - **Created**: 2026-08-25
 
 ## Goal and scope
@@ -22,3 +22,8 @@ the published job names aligned with both required-check declarations.
 
 - Human participant: unresolved; no user-* file was created by this script.
 - Agent participant: [ai-codex.md](ai-codex.md)
+
+## Closure evidence
+
+- Trusted local integration SHA: `200982061c31e54e147843e3d29602d26e32baf9`.
+- Post-merge check: `GOV-PASS` with 0 errors and 0 warnings.

@@ -2,8 +2,8 @@
 
 - **ID**: ticket-001
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
-- **Workflow state**: EDIT
+- **Status**: DONE
+- **Workflow state**: DONE
 - **Created**: 2026-08-25
 
 ## Goal and scope
@@ -17,10 +17,16 @@ authority out of Subactor.
 
 - [x] AC-01: The session request authorizes implementation without a redundant
   confirmation.
-- [ ] AC-02: Package metadata exposes the `estimation` CLI.
-- [ ] AC-03: A versioned, privacy-preserving sample schema is published.
-- [ ] AC-04: Command and query Process URIs are explicitly classified.
-- [ ] AC-05: A separate application workstream implements and tests this contract.
+- [x] AC-02: Package metadata exposes the `estimation` CLI.
+- [x] AC-03: A versioned, privacy-preserving sample schema is published.
+- [x] AC-04: Command and query Process URIs are explicitly classified.
+- [x] AC-05: A separate application workstream implements and tests this contract.
+
+## Closure evidence
+
+- Trusted local integration SHA: `33ffdcdfcc702d720eb12e6aec84bf6c9dbe9ce3`.
+- Post-merge checks: package metadata and both JSON contracts were parsed;
+  application tests passed `6/6` on 2026-08-25.
 
 ## Participants
 

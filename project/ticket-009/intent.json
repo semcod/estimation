@@ -1,0 +1,71 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-009",
+  "summary": "Make governed estimation CI reproducible",
+  "workstream": "infrastructure",
+  "classification": {
+    "kind": "BUG",
+    "priority": "P1",
+    "origin": "regression"
+  },
+  "allowedPaths": ["project/ticket-009/**", "TODO.md", "project/TICKETS.md", ".github/workflows/ci.yml"],
+  "delivery": {
+    "acceptedBaseSha": "8dd7bc814b0fa987e968524745913771910560c7",
+    "targetBranch": "main",
+    "outcome": "Linux and Windows CI satisfy the same managed-hook and content-digest preconditions as local governance.",
+    "nonGoals": [
+      "Change governance policy or weaken any gate.",
+      "Change estimation runtime behavior."
+    ],
+    "complexity": "XS",
+    "estimatedMinutes": 10,
+    "budgets": {
+      "maxImplementationFiles": 1,
+      "maxAffectedComponents": 1,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Configure Windows LF handling before checkout, pin external actions immutably and activate repository-managed hooks explicitly in each CI runner.",
+      "components": [
+        {
+          "name": "continuous-integration",
+          "paths": [".github/workflows/ci.yml"]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Remove the CI setup steps; no runtime or persisted data changes are involved."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-02",
+        "commands": ["python -m pytest -q"],
+        "evidence": "Linux CI executes pytest after configuring core.hooksPath."
+      },
+      {
+        "criterion": "AC-03",
+        "commands": ["project\\governance-check.bat"],
+        "evidence": "Windows checkout uses LF and governance sees the managed hook."
+      },
+      {
+        "criterion": "AC-04",
+        "commands": ["PYTHONPATH=src python -m pytest", "PYTHONPATH=src ./project/governance-check.sh"],
+        "evidence": "Local functional and governance suites pass."
+      }
+    ]
+  },
+  "forbiddenPaths": ["project/ticket-*/user-*.md"],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null
+}

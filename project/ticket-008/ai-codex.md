@@ -23,6 +23,12 @@ the same workload at 1 Hz consumed about 0.36 CPU seconds, a reduction near
 
 - Initialized the bounded ticket and recorded SESSION_EXECUTION_AUTHORIZATION
   from the request to execute this work.
+- Changed command and PID sampling defaults from 10 Hz to 1 Hz.
+- Replaced the linear prior-event scan with a positional read capped at the
+  final 4096 bytes while preserving append-only hash-chain semantics.
+- Preserved the original implementation blobs exactly while rebuilding the
+  delivery as separate plan, implementation and evidence commits.
+- Passed ten functional tests and the complete governance check locally.
 
 ## Blockers
 

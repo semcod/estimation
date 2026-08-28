@@ -1,0 +1,8 @@
+2026-08-28 validation
+
+- `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python -m pytest -q`: PASS
+  (10 passed).
+- `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src ./project/governance-check.sh`:
+  PASS (0 errors, 0 warnings).
+- The four implementation/test blobs match the original PR #1 head exactly.
+- Plan commit `a67e364` precedes implementation commit `391d5af`.

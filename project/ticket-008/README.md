@@ -3,7 +3,7 @@
 - **ID**: ticket-008
 - **Owner**: unresolved:human
 - **Status**: IN_PROGRESS
-- **Workflow state**: EDIT
+- **Workflow state**: PUBLICATION
 - **Created**: 2026-08-25
 
 ## Goal and scope
@@ -16,10 +16,10 @@ the tail of the event log when extending its hash chain.
 
 - [x] AC-01: Scope is approved by the user's request to measure and reduce
   Subactor resource consumption.
-- [ ] AC-02: Command and PID observation default to one sample per second.
-- [ ] AC-03: Appending an event does not scan the full historical JSONL file.
-- [ ] AC-04: Tests prove the new defaults and bounded tail read.
-- [ ] AC-05: Pytest and governance checks pass.
+- [x] AC-02: Command and PID observation default to one sample per second.
+- [x] AC-03: Appending an event does not scan the full historical JSONL file.
+- [x] AC-04: Tests prove the new defaults and bounded tail read.
+- [x] AC-05: Pytest and governance checks pass.
 
 ## Participants
 

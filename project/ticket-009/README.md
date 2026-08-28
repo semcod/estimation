@@ -2,8 +2,8 @@
 
 - **ID**: ticket-009
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
-- **Workflow state**: PUBLICATION
+- **Status**: DONE
+- **Workflow state**: DONE
 - **Created**: 2026-08-25
 
 ## Goal and scope
@@ -25,3 +25,10 @@ the Windows worktree to LF before validating hash-bound standard files.
 - Human participant: user:tom; authorization is recorded by the originating
   request and no synthesized user file was created.
 - Agent participant: [ai-codex.md](ai-codex.md)
+
+## Closure evidence
+
+- Trusted implementation SHA: `e5c0eb612908780c9dd2b4a102e885d945a797c3`.
+- Protected Validator run `33160322142` approved and explicitly merged PR #2.
+- Main integration SHA: `4ff7e4d6e288697bac10e2008524f65c0e8280de`.
+- Linux, Windows and governance checks were green on the frozen head.

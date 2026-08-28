@@ -3,6 +3,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 import hashlib
 import json
+import os
 from pathlib import Path
 from typing import Any, Iterator
 
@@ -42,14 +43,21 @@ def _append_line(path: Path, payload: dict[str, Any]) -> None:
 
 
 def _last_event(handle: Any) -> tuple[int, str]:
-    handle.seek(0)
-    last: dict[str, Any] | None = None
-    for raw_line in handle:
-        line = raw_line.strip()
-        if line:
-            last = json.loads(line)
-    if last is None:
+    handle.flush()
+    offset = os.fstat(handle.fileno()).st_size
+    suffix = b""
+    while offset > 0:
+        size = min(4096, offset)
+        offset -= size
+        suffix = os.pread(handle.fileno(), size, offset) + suffix
+        stripped = suffix.rstrip()
+        separator = max(stripped.rfind(b"\n"), stripped.rfind(b"\r"))
+        if separator >= 0:
+            last = json.loads(stripped[separator + 1 :].decode("utf-8"))
+            return int(last["sequence"]), str(last["eventHash"])
+    if not suffix.strip():
         return 0, ZERO_HASH
+    last = json.loads(suffix.strip().decode("utf-8"))
     return int(last["sequence"]), str(last["eventHash"])
 
 

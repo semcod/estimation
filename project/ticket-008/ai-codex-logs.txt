@@ -6,3 +6,5 @@
   PASS (0 errors, 0 warnings).
 - The four implementation/test blobs match the original PR #1 head exactly.
 - Plan commit `a67e364` precedes implementation commit `391d5af`.
+- Protected Validator run `33160630219`: APPROVED and explicitly merged PR #3
+  at exact head `53cf54cf5cd0e3214191de4ef0d931beeda6c590`.

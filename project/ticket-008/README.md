@@ -2,8 +2,8 @@
 
 - **ID**: ticket-008
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
-- **Workflow state**: PUBLICATION
+- **Status**: DONE
+- **Workflow state**: DONE
 - **Created**: 2026-08-25
 
 ## Goal and scope
@@ -26,3 +26,10 @@ the tail of the event log when extending its hash chain.
 - Human participant: user:tom; authorization is recorded by the originating
   request and no synthesized user file was created.
 - Agent participant: [ai-codex.md](ai-codex.md)
+
+## Closure evidence
+
+- Trusted implementation SHA: `53cf54cf5cd0e3214191de4ef0d931beeda6c590`.
+- Protected Validator run `33160630219` approved and explicitly merged PR #3.
+- Main integration SHA: `a60f6b4ad89b79dab842db45ce8a469664bc3513`.
+- Ten functional tests and governance with no findings passed before publication.

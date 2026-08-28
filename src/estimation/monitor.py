@@ -106,7 +106,7 @@ def measure_command(
     process_key: str | None = None,
     ticket_id: str | None = None,
     correlation_id: str | None = None,
-    interval_seconds: float = 0.1,
+    interval_seconds: float = 1.0,
 ) -> Sample:
     argv = [str(item) for item in command]
     if not argv:
@@ -157,7 +157,7 @@ def observe_pid(
     process_key: str | None = None,
     ticket_id: str | None = None,
     correlation_id: str | None = None,
-    interval_seconds: float = 0.1,
+    interval_seconds: float = 1.0,
     duration_seconds: float = 10.0,
 ) -> Sample:
     root = psutil.Process(int(pid))

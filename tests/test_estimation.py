@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import json
 import os
 from pathlib import Path
@@ -10,6 +11,7 @@ from estimation.model import build_sample, canonical_process_uri, utc_now
 from estimation.monitor import measure_command, observe_pid
 from estimation.stats import aggregate_samples, estimate_workload
 from estimation.store import append_sample, load_samples
+import estimation.store as store_module
 
 
 def _sample(duration: float, memory: int, *, outcome: str = "succeeded"):
@@ -70,6 +72,31 @@ def test_event_store_builds_a_hash_chain(tmp_path: Path) -> None:
     assert rows[1]["previousHash"] == rows[0]["eventHash"]
     assert all(row["rawOutputIncluded"] is False for row in rows)
     assert all(row["secretMaterialIncluded"] is False for row in rows)
+
+
+def test_monitor_defaults_to_one_hertz() -> None:
+    assert inspect.signature(measure_command).parameters["interval_seconds"].default == 1.0
+    assert inspect.signature(observe_pid).parameters["interval_seconds"].default == 1.0
+
+
+def test_event_append_reads_only_bounded_tail(tmp_path: Path, monkeypatch) -> None:
+    store = tmp_path / "samples.jsonl"
+    events = tmp_path / "events.jsonl"
+    for index in range(1000):
+        append_sample(_sample(float(index + 1), index + 1), store, events)
+
+    original_pread = store_module.os.pread
+    bytes_read = 0
+
+    def measured_pread(fd: int, size: int, offset: int) -> bytes:
+        nonlocal bytes_read
+        chunk = original_pread(fd, size, offset)
+        bytes_read += len(chunk)
+        return chunk
+
+    monkeypatch.setattr(store_module.os, "pread", measured_pread)
+    append_sample(_sample(1001.0, 1001), store, events)
+    assert bytes_read <= 4096
 
 
 def test_report_and_workload_estimate_use_successful_p90() -> None:

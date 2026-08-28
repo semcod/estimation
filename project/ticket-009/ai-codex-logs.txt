@@ -1,0 +1,9 @@
+2026-08-28 validation
+
+- `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python -m pytest -q`: PASS
+  (8 passed).
+- `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src ./project/governance-check.sh`:
+  PASS (0 errors, 0 warnings).
+- Workflow actions are pinned by full commit SHA; Windows configures LF before
+  checkout and both runners activate `.githooks` before their governed gates.
+- GitHub repository setting `delete_branch_on_merge=true` was already correct.

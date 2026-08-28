@@ -3,7 +3,7 @@
 - **ID**: ticket-009
 - **Owner**: unresolved:human
 - **Status**: IN_PROGRESS
-- **Workflow state**: EDIT
+- **Workflow state**: PUBLICATION
 - **Created**: 2026-08-25
 
 ## Goal and scope
@@ -16,9 +16,9 @@ the Windows worktree to LF before validating hash-bound standard files.
 
 - [x] AC-01: Scope is approved by the user's request to test and repair
   autonomy and publish all changes.
-- [ ] AC-02: Linux functional CI activates the managed hook.
-- [ ] AC-03: Windows governance preserves LF and activates the managed hook.
-- [ ] AC-04: Local pytest and governance pass.
+- [x] AC-02: Linux functional CI activates the managed hook.
+- [x] AC-03: Windows governance preserves LF and activates the managed hook.
+- [x] AC-04: Local pytest and governance pass.
 
 ## Participants
 

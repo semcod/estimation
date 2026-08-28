@@ -25,6 +25,9 @@ setting did not delete merged head branches as required.
   from the request to execute this work.
 - Selected immutable action revisions and a pre-checkout LF configuration so
   the repair needs no destructive reset in the ephemeral runner.
+- Activated the managed hook in both jobs and verified that repository branch
+  deletion after merge is already enabled.
+- Passed the complete package suite and governance locally.
 
 ## Blockers
 

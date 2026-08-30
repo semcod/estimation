@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import hashlib
 import os
+from pathlib import Path
 import signal
 import subprocess
 import time
@@ -10,6 +12,169 @@ from typing import Sequence
 import psutil
 
 from estimation.model import Sample, build_sample, utc_now
+
+
+POWER_CAP_ROOT = Path("/sys/class/powercap")
+CGROUP_ROOT = Path("/sys/fs/cgroup")
+
+
+def _read_number(path: Path) -> int | None:
+    try:
+        return int(path.read_text(encoding="utf-8").strip())
+    except (OSError, ValueError):
+        return None
+
+
+def _rapl_snapshot(root: Path = POWER_CAP_ROOT) -> dict[str, tuple[int, int | None]]:
+    result: dict[str, tuple[int, int | None]] = {}
+    try:
+        domains = [item for item in root.iterdir() if (item / "energy_uj").is_file()]
+    except OSError:
+        return result
+    for domain in domains:
+        energy = _read_number(domain / "energy_uj")
+        if energy is not None:
+            key = hashlib.sha256(domain.name.encode("utf-8")).hexdigest()[:16]
+            result[key] = (energy, _read_number(domain / "max_energy_range_uj"))
+    return result
+
+
+def _rapl_delta(start: dict[str, tuple[int, int | None]], end: dict[str, tuple[int, int | None]]) -> tuple[float | None, int]:
+    delta = 0
+    domains = 0
+    for key, (before, maximum) in start.items():
+        if key not in end:
+            continue
+        after = end[key][0]
+        change = after - before
+        if change < 0 and maximum:
+            change += maximum
+        if change >= 0:
+            delta += change
+            domains += 1
+    return (delta / 1_000_000.0, domains) if domains else (None, 0)
+
+
+def _host_cpu_seconds(path: Path = Path("/proc/stat")) -> float | None:
+    try:
+        fields = path.read_text(encoding="utf-8").splitlines()[0].split()[1:]
+        return sum(int(value) for value in fields) / float(os.sysconf("SC_CLK_TCK"))
+    except (OSError, ValueError, IndexError):
+        return None
+
+
+def _cgroup_directory(pid: int, root: Path = CGROUP_ROOT) -> Path | None:
+    try:
+        rows = Path(f"/proc/{pid}/cgroup").read_text(encoding="utf-8").splitlines()
+        relative = next(row.split("::", 1)[1] for row in rows if "::" in row)
+        candidate = (root / relative.lstrip("/")).resolve()
+        candidate.relative_to(root.resolve())
+        return candidate
+    except (OSError, StopIteration, ValueError):
+        return None
+
+
+def _key_values(path: Path) -> dict[str, int]:
+    try:
+        return {
+            fields[0]: int(fields[1])
+            for line in path.read_text(encoding="utf-8").splitlines()
+            if len(fields := line.split()) >= 2 and fields[1].isdigit()
+        }
+    except OSError:
+        return {}
+
+
+def _io_values(path: Path) -> tuple[int, int] | None:
+    try:
+        reads = writes = 0
+        for line in path.read_text(encoding="utf-8").splitlines():
+            values = {key: int(value) for token in line.split()[1:] for key, value in [token.split("=", 1)]}
+            reads += values.get("rbytes", 0)
+            writes += values.get("wbytes", 0)
+        return reads, writes
+    except (OSError, ValueError):
+        return None
+
+
+def _pressure_total(path: Path) -> int | None:
+    try:
+        line = next(row for row in path.read_text(encoding="utf-8").splitlines() if row.startswith("some "))
+        return int(next(token.split("=", 1)[1] for token in line.split() if token.startswith("total=")))
+    except (OSError, StopIteration, ValueError):
+        return None
+
+
+def _cgroup_snapshot(directory: Path | None) -> dict[str, int | str | None]:
+    if directory is None:
+        return {}
+    cpu = _key_values(directory / "cpu.stat")
+    io = _io_values(directory / "io.stat")
+    return {
+        "cgroup_id": "cgroup:" + hashlib.sha256(str(directory).encode("utf-8")).hexdigest()[:16],
+        "cpu_usec": cpu.get("usage_usec"),
+        "memory_peak": _read_number(directory / "memory.peak"),
+        "read_bytes": io[0] if io else None,
+        "write_bytes": io[1] if io else None,
+        "pids_peak": _read_number(directory / "pids.peak"),
+        "psi_cpu": _pressure_total(directory / "cpu.pressure"),
+        "psi_io": _pressure_total(directory / "io.pressure"),
+        "psi_memory": _pressure_total(directory / "memory.pressure"),
+    }
+
+
+def _counter_delta(before: int | str | None, after: int | str | None, scale: float = 1.0) -> float | int | None:
+    if not isinstance(before, int) or not isinstance(after, int):
+        return None
+    return max(0, after - before) / scale
+
+
+@dataclass
+class LinuxObservation:
+    pid: int
+    rapl: dict[str, tuple[int, int | None]] = field(default_factory=_rapl_snapshot)
+    host_cpu_seconds: float | None = field(default_factory=_host_cpu_seconds)
+    cgroup_directory: Path | None = None
+    cgroup: dict[str, int | str | None] = field(default_factory=dict)
+
+    @classmethod
+    def start(cls, pid: int) -> "LinuxObservation":
+        directory = _cgroup_directory(pid)
+        return cls(pid=pid, cgroup_directory=directory, cgroup=_cgroup_snapshot(directory))
+
+    def finish(self, process_cpu_seconds: float) -> tuple[dict[str, object], dict[str, object]]:
+        package_joules, domains = _rapl_delta(self.rapl, _rapl_snapshot())
+        host_end = _host_cpu_seconds()
+        host_delta = None if self.host_cpu_seconds is None or host_end is None else max(0.0, host_end - self.host_cpu_seconds)
+        if package_joules is not None and host_delta and process_cpu_seconds >= 0:
+            energy = {
+                "joules": round(package_joules * min(1.0, process_cpu_seconds / host_delta), 6),
+                "method": "rapl_cpu_share",
+                "confidence": "low",
+                "domains": domains,
+            }
+        else:
+            energy = {"joules": None, "method": "unavailable", "confidence": "none", "domains": domains}
+
+        end = _cgroup_snapshot(self.cgroup_directory)
+        same_cgroup = bool(self.cgroup) and self.cgroup.get("cgroup_id") == end.get("cgroup_id")
+        def delta(name: str, scale: float = 1.0):
+            return _counter_delta(self.cgroup.get(name), end.get(name), scale) if same_cgroup else None
+        kernel = {
+            "cgroup_id": end.get("cgroup_id") if same_cgroup else None,
+            "attribution": "shared" if same_cgroup else "unavailable",
+            "cpu_seconds": delta("cpu_usec", 1_000_000.0),
+            "memory_peak_bytes": end.get("memory_peak") if same_cgroup else None,
+            "read_bytes": delta("read_bytes"),
+            "write_bytes": delta("write_bytes"),
+            "pids_peak": end.get("pids_peak") if same_cgroup else None,
+            "pressure": {
+                "cpu_some_seconds": delta("psi_cpu", 1_000_000.0),
+                "io_some_seconds": delta("psi_io", 1_000_000.0),
+                "memory_some_seconds": delta("psi_memory", 1_000_000.0),
+            },
+        }
+        return energy, kernel
 
 
 @dataclass
@@ -76,7 +241,10 @@ def _finish_sample(
     outcome: str,
     program: str,
     argv: Sequence[str],
+    observation: LinuxObservation,
 ) -> Sample:
+    process_cpu_seconds = accumulator.cpu_user_seconds + accumulator.cpu_system_seconds
+    energy, kernel = observation.finish(process_cpu_seconds)
     return build_sample(
         process_uri=process_uri,
         process_key=process_key,
@@ -96,6 +264,8 @@ def _finish_sample(
         outcome=outcome,
         program=program,
         argv=argv,
+        energy=energy,
+        kernel=kernel,
     )
 
 
@@ -117,6 +287,7 @@ def measure_command(
     child = subprocess.Popen(argv)
     root = psutil.Process(child.pid)
     accumulator = ResourceAccumulator()
+    observation = LinuxObservation.start(child.pid)
     interrupted = False
 
     try:
@@ -147,6 +318,7 @@ def measure_command(
         outcome=outcome,
         program=os.path.basename(argv[0]),
         argv=argv,
+        observation=observation,
     )
 
 
@@ -166,6 +338,7 @@ def observe_pid(
     started_at = utc_now()
     started_monotonic = time.monotonic()
     accumulator = ResourceAccumulator()
+    observation = LinuxObservation.start(root.pid)
 
     while time.monotonic() - started_monotonic < duration_limit:
         try:
@@ -192,4 +365,5 @@ def observe_pid(
         outcome="observed",
         program=program,
         argv=[program, f"pid:{int(pid)}"],
+        observation=observation,
     )

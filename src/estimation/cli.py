@@ -9,7 +9,7 @@ from typing import Sequence
 
 from estimation.model import Sample
 from estimation.monitor import measure_command, observe_pid
-from estimation.stats import aggregate_samples, estimate_workload
+from estimation.stats import aggregate_samples, estimate_workload, rank_opportunities
 from estimation.store import append_sample, load_samples
 
 
@@ -49,6 +49,12 @@ def _parser() -> argparse.ArgumentParser:
     estimate.add_argument("--process-uri", required=True)
     estimate.add_argument("--quantity", type=int, default=1)
     estimate.add_argument("--parallelism", type=int, default=1)
+
+    opportunities = commands.add_parser("opportunities", help="rank recurring optimization opportunities")
+    opportunities.add_argument("--store", default=DEFAULT_STORE)
+    opportunities.add_argument("--objective", choices=("cpu", "wall", "energy", "io"), default="cpu")
+    opportunities.add_argument("--minimum-samples", type=int, default=12)
+    opportunities.add_argument("--reduction-fraction", type=float, default=0.30)
 
     validate = commands.add_parser("validate", help="validate all stored samples")
     validate.add_argument("--store", default=DEFAULT_STORE)
@@ -105,6 +111,15 @@ def main(argv: Sequence[str] | None = None) -> int:
                 args.process_uri,
                 quantity=args.quantity,
                 parallelism=args.parallelism,
+            )
+            print(json.dumps(result, indent=2, sort_keys=True))
+            return 0
+        if args.command_name == "opportunities":
+            result = rank_opportunities(
+                samples,
+                objective=args.objective,
+                minimum_samples=args.minimum_samples,
+                reduction_fraction=args.reduction_fraction,
             )
             print(json.dumps(result, indent=2, sort_keys=True))
             return 0

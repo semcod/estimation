@@ -6,8 +6,10 @@ import os
 from pathlib import Path
 import sys
 
+import pytest
+
 from estimation.cli import main
-from estimation.model import Sample, build_sample, canonical_process_uri, utc_now
+from estimation.model import Sample, build_sample, canonical_process_revision, canonical_process_uri, utc_now
 from estimation.monitor import measure_command, observe_pid
 from estimation.stats import aggregate_samples, estimate_workload, rank_opportunities
 from estimation.store import append_sample, load_samples
@@ -45,6 +47,13 @@ def _sample(duration: float, memory: int, *, outcome: str = "succeeded", process
 
 def test_canonical_uri_removes_query_and_fragment() -> None:
     assert canonical_process_uri("Diagit://fleet/worktrees?root=/tmp#x") == "diagit://fleet/worktrees"
+
+
+def test_process_revision_is_explicit_and_bounded() -> None:
+    assert canonical_process_revision("git:abc123") == "git:abc123"
+    assert canonical_process_revision("") is None
+    with pytest.raises(ValueError, match="unsupported characters"):
+        canonical_process_revision("revision with spaces")
 
 
 def test_measure_command_and_store_do_not_persist_arguments(tmp_path: Path) -> None:
@@ -173,11 +182,12 @@ def test_cli_quiet_run_persists_without_mixing_sample_into_stdout(tmp_path: Path
     events = tmp_path / "events.jsonl"
     assert main([
         "run", "--process-uri", "test://quiet/run", "--store", str(store),
-        "--events", str(events), "--interval", "0.01", "--quiet", "--",
+        "--events", str(events), "--interval", "0.01", "--process-revision", "git:abc123", "--quiet", "--",
         sys.executable, "-c", "print('handler-output')",
     ]) == 0
     assert capfd.readouterr().out.strip() == "handler-output"
     assert load_samples(store)[0].process_key == "test://quiet/run"
+    assert load_samples(store)[0].process_revision == "git:abc123"
 
 
 def test_observe_current_process_is_bounded() -> None:

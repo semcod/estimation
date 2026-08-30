@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import platform
+import re
 from typing import Any, Sequence
 from urllib.parse import urlsplit, urlunsplit
 import uuid
@@ -15,6 +16,7 @@ import psutil
 
 SAMPLE_SCHEMA = "semcod.estimation.sample/v2"
 SUPPORTED_SAMPLE_SCHEMAS = {"semcod.estimation.sample/v1", SAMPLE_SCHEMA}
+PROCESS_REVISION = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/+\-]{0,127}$")
 
 
 def unavailable_energy() -> dict[str, Any]:
@@ -56,6 +58,15 @@ def canonical_process_uri(value: str) -> str:
     if len(canonical) < 3:
         raise ValueError("process URI is too short")
     return canonical[:320]
+
+
+def canonical_process_revision(value: str | None) -> str | None:
+    revision = str(value or "").strip()
+    if not revision:
+        return None
+    if not PROCESS_REVISION.fullmatch(revision):
+        raise ValueError("process revision contains unsupported characters")
+    return revision
 
 
 def argv_sha256(argv: Sequence[str]) -> str:
@@ -103,6 +114,7 @@ class Sample:
     secret_material_included: bool = False
     energy: dict[str, Any] | None = None
     kernel: dict[str, Any] | None = None
+    process_revision: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -139,6 +151,7 @@ def build_sample(
     argv: Sequence[str],
     energy: dict[str, Any] | None = None,
     kernel: dict[str, Any] | None = None,
+    process_revision: str | None = None,
 ) -> Sample:
     canonical = canonical_process_uri(process_uri)
     duration = max(0.0, float(duration_seconds))
@@ -169,4 +182,5 @@ def build_sample(
         host_profile=host_profile(),
         energy=energy or unavailable_energy(),
         kernel=kernel or unavailable_kernel_observation(),
+        process_revision=canonical_process_revision(process_revision),
     )

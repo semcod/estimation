@@ -25,6 +25,7 @@ def _context(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--store", default=DEFAULT_STORE)
     parser.add_argument("--events", default=DEFAULT_EVENTS)
     parser.add_argument("--interval", type=float, default=1.0)
+    parser.add_argument("--process-revision", default=os.getenv("SUBACTOR_PROCESS_REVISION"))
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -88,6 +89,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 ticket_id=args.ticket,
                 correlation_id=args.correlation_id,
                 interval_seconds=args.interval,
+                process_revision=args.process_revision,
             )
             _write_sample(sample, args)
             return int(sample.exit_code or 0)
@@ -100,6 +102,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 correlation_id=args.correlation_id,
                 interval_seconds=args.interval,
                 duration_seconds=args.duration,
+                process_revision=args.process_revision,
             )
             _write_sample(sample, args)
             return 0

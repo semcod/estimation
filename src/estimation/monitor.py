@@ -242,6 +242,7 @@ def _finish_sample(
     program: str,
     argv: Sequence[str],
     observation: LinuxObservation,
+    process_revision: str | None,
 ) -> Sample:
     process_cpu_seconds = accumulator.cpu_user_seconds + accumulator.cpu_system_seconds
     energy, kernel = observation.finish(process_cpu_seconds)
@@ -266,6 +267,7 @@ def _finish_sample(
         argv=argv,
         energy=energy,
         kernel=kernel,
+        process_revision=process_revision,
     )
 
 
@@ -277,6 +279,7 @@ def measure_command(
     ticket_id: str | None = None,
     correlation_id: str | None = None,
     interval_seconds: float = 1.0,
+    process_revision: str | None = None,
 ) -> Sample:
     argv = [str(item) for item in command]
     if not argv:
@@ -319,6 +322,7 @@ def measure_command(
         program=os.path.basename(argv[0]),
         argv=argv,
         observation=observation,
+        process_revision=process_revision,
     )
 
 
@@ -331,6 +335,7 @@ def observe_pid(
     correlation_id: str | None = None,
     interval_seconds: float = 1.0,
     duration_seconds: float = 10.0,
+    process_revision: str | None = None,
 ) -> Sample:
     root = psutil.Process(int(pid))
     interval = max(0.01, float(interval_seconds))
@@ -366,4 +371,5 @@ def observe_pid(
         program=program,
         argv=[program, f"pid:{int(pid)}"],
         observation=observation,
+        process_revision=process_revision,
     )

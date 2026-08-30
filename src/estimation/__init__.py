@@ -1,5 +1,7 @@
 """Resource estimation for ticket-bound URI processes."""
 
+__version__ = "0.2.0"
+
 from estimation.model import Sample, canonical_process_uri
 from estimation.monitor import measure_command, observe_pid
 from estimation.stats import aggregate_samples, estimate_workload
@@ -15,5 +17,3 @@ __all__ = [
     "measure_command",
     "observe_pid",
 ]
-
-__version__ = "0.1.0"

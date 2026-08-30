@@ -43,7 +43,7 @@
       "decision": "Observe existing counters without privilege, retain v1 reads, disclose attribution confidence and rank CPU, wall, energy or I/O independently.",
       "components": [
         {"name": "sample-and-observer", "paths": ["src/estimation/model.py", "src/estimation/monitor.py"]},
-        {"name": "analysis-interface", "paths": ["src/estimation/stats.py", "src/estimation/cli.py"]},
+        {"name": "analysis-interface", "paths": ["src/estimation/__init__.py", "src/estimation/stats.py", "src/estimation/cli.py"]},
         {"name": "verification", "paths": ["tests/**"]}
       ],
       "responsibilityChanges": false,

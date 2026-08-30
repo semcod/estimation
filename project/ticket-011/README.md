@@ -21,7 +21,7 @@ Accept an explicit process revision for version-over-version regression analysis
 - [x] AC-03: Ranking requires twelve comparable samples by default and never
   combines unlike resource units into an implicit score.
 - [x] AC-04: CLI tests cover the opportunity query.
-- [x] AC-05: Fourteen functional tests, a v2 schema instance check, a live
+- [x] AC-05: Functional tests, a v2 schema instance check, a live
   smoke test and governance pass.
 
 ## Validation evidence
@@ -29,6 +29,7 @@ Accept an explicit process revision for version-over-version regression analysis
 - `/usr/bin/python3 -m pytest -q`: 14 passed.
 - A generated v2 sample validates with Draft 2020-12 JSON Schema.
 - A live `sleep` measurement and CPU opportunity query completed successfully.
+- Runtime and CLI versions are regression-tested against package metadata.
 - The live host exposed shared cgroup/PSI evidence but no readable RAPL domain;
   energy was correctly marked unavailable.
 

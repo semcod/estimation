@@ -20,6 +20,9 @@ or cgroup attribution on a shared host. Keep measurement advisory and private.
 
 ## Actual changes
 
+- Corrected the runtime and CLI version projection to match package version
+  `0.2.0`, with a regression test covering both interfaces.
+
 - Initialized the bounded ticket and recorded SESSION_EXECUTION_AUTHORIZATION
   from the request to execute this work.
 - Added backward-compatible sample v2 serialization with explicit unavailable

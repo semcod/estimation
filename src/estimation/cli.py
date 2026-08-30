@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 from typing import Sequence
 
+from estimation import __version__
 from estimation.model import Sample
 from estimation.monitor import measure_command, observe_pid
 from estimation.stats import aggregate_samples, estimate_workload, rank_opportunities
@@ -30,7 +31,7 @@ def _context(parser: argparse.ArgumentParser) -> None:
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="estimation")
-    parser.add_argument("--version", action="version", version="estimation 0.1.0")
+    parser.add_argument("--version", action="version", version=f"estimation {__version__}")
     commands = parser.add_subparsers(dest="command_name", required=True)
 
     run = commands.add_parser("run", help="measure a caller-authorized command")

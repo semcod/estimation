@@ -48,7 +48,7 @@
       ],
       "responsibilityChanges": false,
       "interfaceChanges": ["Emit v2 samples with optional telemetry.", "Add the opportunities CLI query.", "Accept an explicit bounded process revision."],
-      "dataChanges": ["Allow an optional bounded process_revision in v2 samples."],
+      "dataChanges": [],
       "ui": {"impact": "none", "states": [], "evidence": []},
       "rollback": "Stop emitting v2 and remove the query; existing append-only evidence remains readable."
     },

@@ -7,9 +7,10 @@ from pathlib import Path
 import sys
 from typing import Sequence
 
+from estimation import __version__
 from estimation.model import Sample
 from estimation.monitor import measure_command, observe_pid
-from estimation.stats import aggregate_samples, estimate_workload
+from estimation.stats import aggregate_samples, estimate_workload, rank_opportunities
 from estimation.store import append_sample, load_samples
 
 
@@ -25,15 +26,17 @@ def _context(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--store", default=DEFAULT_STORE)
     parser.add_argument("--events", default=DEFAULT_EVENTS)
     parser.add_argument("--interval", type=float, default=1.0)
+    parser.add_argument("--process-revision", default=os.getenv("SUBACTOR_PROCESS_REVISION"))
 
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="estimation")
-    parser.add_argument("--version", action="version", version="estimation 0.1.0")
+    parser.add_argument("--version", action="version", version=f"estimation {__version__}")
     commands = parser.add_subparsers(dest="command_name", required=True)
 
     run = commands.add_parser("run", help="measure a caller-authorized command")
     _context(run)
+    run.add_argument("--quiet", action="store_true", help="persist the sample without printing it")
     run.add_argument("command", nargs=argparse.REMAINDER)
 
     observe = commands.add_parser("observe", help="observe an existing PID tree")
@@ -50,6 +53,12 @@ def _parser() -> argparse.ArgumentParser:
     estimate.add_argument("--quantity", type=int, default=1)
     estimate.add_argument("--parallelism", type=int, default=1)
 
+    opportunities = commands.add_parser("opportunities", help="rank recurring optimization opportunities")
+    opportunities.add_argument("--store", default=DEFAULT_STORE)
+    opportunities.add_argument("--objective", choices=("cpu", "wall", "energy", "io"), default="cpu")
+    opportunities.add_argument("--minimum-samples", type=int, default=12)
+    opportunities.add_argument("--reduction-fraction", type=float, default=0.30)
+
     validate = commands.add_parser("validate", help="validate all stored samples")
     validate.add_argument("--store", default=DEFAULT_STORE)
     return parser
@@ -63,7 +72,8 @@ def _require_process_uri(value: str | None) -> str:
 
 def _write_sample(sample: Sample, args: argparse.Namespace) -> None:
     append_sample(sample, Path(args.store), Path(args.events))
-    print(json.dumps(sample.to_dict(), ensure_ascii=False, sort_keys=True))
+    if not getattr(args, "quiet", False):
+        print(json.dumps(sample.to_dict(), ensure_ascii=False, sort_keys=True))
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -80,6 +90,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 ticket_id=args.ticket,
                 correlation_id=args.correlation_id,
                 interval_seconds=args.interval,
+                process_revision=args.process_revision,
             )
             _write_sample(sample, args)
             return int(sample.exit_code or 0)
@@ -92,6 +103,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 correlation_id=args.correlation_id,
                 interval_seconds=args.interval,
                 duration_seconds=args.duration,
+                process_revision=args.process_revision,
             )
             _write_sample(sample, args)
             return 0
@@ -105,6 +117,15 @@ def main(argv: Sequence[str] | None = None) -> int:
                 args.process_uri,
                 quantity=args.quantity,
                 parallelism=args.parallelism,
+            )
+            print(json.dumps(result, indent=2, sort_keys=True))
+            return 0
+        if args.command_name == "opportunities":
+            result = rank_opportunities(
+                samples,
+                objective=args.objective,
+                minimum_samples=args.minimum_samples,
+                reduction_fraction=args.reduction_fraction,
             )
             print(json.dumps(result, indent=2, sort_keys=True))
             return 0

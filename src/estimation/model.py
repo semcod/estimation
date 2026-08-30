@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import platform
+import re
 from typing import Any, Sequence
 from urllib.parse import urlsplit, urlunsplit
 import uuid
@@ -13,7 +14,35 @@ import uuid
 import psutil
 
 
-SAMPLE_SCHEMA = "semcod.estimation.sample/v1"
+SAMPLE_SCHEMA = "semcod.estimation.sample/v2"
+SUPPORTED_SAMPLE_SCHEMAS = {"semcod.estimation.sample/v1", SAMPLE_SCHEMA}
+PROCESS_REVISION = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/+\-]{0,127}$")
+
+
+def unavailable_energy() -> dict[str, Any]:
+    return {
+        "joules": None,
+        "method": "unavailable",
+        "confidence": "none",
+        "domains": 0,
+    }
+
+
+def unavailable_kernel_observation() -> dict[str, Any]:
+    return {
+        "cgroup_id": None,
+        "attribution": "unavailable",
+        "cpu_seconds": None,
+        "memory_peak_bytes": None,
+        "read_bytes": None,
+        "write_bytes": None,
+        "pids_peak": None,
+        "pressure": {
+            "cpu_some_seconds": None,
+            "io_some_seconds": None,
+            "memory_some_seconds": None,
+        },
+    }
 
 
 def utc_now() -> str:
@@ -29,6 +58,15 @@ def canonical_process_uri(value: str) -> str:
     if len(canonical) < 3:
         raise ValueError("process URI is too short")
     return canonical[:320]
+
+
+def canonical_process_revision(value: str | None) -> str | None:
+    revision = str(value or "").strip()
+    if not revision:
+        return None
+    if not PROCESS_REVISION.fullmatch(revision):
+        raise ValueError("process revision contains unsupported characters")
+    return revision
 
 
 def argv_sha256(argv: Sequence[str]) -> str:
@@ -74,15 +112,21 @@ class Sample:
     host_profile: dict[str, Any]
     raw_output_included: bool = False
     secret_material_included: bool = False
+    energy: dict[str, Any] | None = None
+    kernel: dict[str, Any] | None = None
+    process_revision: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
     @classmethod
     def from_dict(cls, payload: dict[str, Any]) -> "Sample":
-        if payload.get("schema") != SAMPLE_SCHEMA:
+        if payload.get("schema") not in SUPPORTED_SAMPLE_SCHEMAS:
             raise ValueError("unsupported estimation sample schema")
-        return cls(**payload)
+        normalized = dict(payload)
+        normalized.setdefault("energy", unavailable_energy())
+        normalized.setdefault("kernel", unavailable_kernel_observation())
+        return cls(**normalized)
 
 
 def build_sample(
@@ -105,6 +149,9 @@ def build_sample(
     outcome: str,
     program: str,
     argv: Sequence[str],
+    energy: dict[str, Any] | None = None,
+    kernel: dict[str, Any] | None = None,
+    process_revision: str | None = None,
 ) -> Sample:
     canonical = canonical_process_uri(process_uri)
     duration = max(0.0, float(duration_seconds))
@@ -133,4 +180,7 @@ def build_sample(
         program=os.path.basename(program)[:128] or "unknown",
         argv_sha256=argv_sha256(argv),
         host_profile=host_profile(),
+        energy=energy or unavailable_energy(),
+        kernel=kernel or unavailable_kernel_observation(),
+        process_revision=canonical_process_revision(process_revision),
     )

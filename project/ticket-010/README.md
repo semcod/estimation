@@ -2,8 +2,8 @@
 
 - **ID**: ticket-010
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
-- **Workflow state**: VALIDATION
+- **Status**: DONE
+- **Workflow state**: DONE
 - **Created**: 2026-08-30
 
 ## Goal and scope
@@ -27,6 +27,9 @@ the runtime implementation in the dependent application workstream.
 
 - Both JSON contracts parse successfully with Python's strict JSON parser.
 - Repository governance reports `GOV-PASS` with no errors or warnings.
+- Trusted implementation SHA: `a059d7a9e00498db7f60d449b213ab4a7ec4cbd0`.
+- Protected Validator run `33309674658` approved and explicitly merged PR #7.
+- Main integration SHA: `5ed903d4c8332a0ccbc6a5e4468ee898b7f448b0`.
 
 ## Participants
 

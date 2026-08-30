@@ -1,0 +1,62 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-011",
+  "summary": "Implement energy telemetry and URI Process opportunity ranking",
+  "workstream": "application",
+  "classification": {
+    "kind": "FEATURE",
+    "priority": "P1",
+    "origin": "requested"
+  },
+  "placement": {
+    "home": "semcod",
+    "runtimeOwner": "semcod",
+    "shape": "runtime_service",
+    "adopt": ["wellmanifest/new-project", "wellmanifest/logs", "wellmanifest/performance"]
+  },
+  "allowedPaths": ["project/ticket-011/**", "TODO.md", "project/TICKETS.md", "src/**", "tests/**"],
+  "forbiddenPaths": ["project/ticket-*/user-*.md"],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "4fbc1477fee93d72f14b13164b5f85a308a359b2",
+    "targetBranch": "main",
+    "outcome": "Collect optional Linux energy and pressure evidence and rank recurring URI Process savings under an explicit objective.",
+    "nonGoals": [
+      "Create or mutate cgroups, scheduling policy or process authorization.",
+      "Claim process-exclusive attribution for shared counters.",
+      "Persist arguments, output, environment values, raw cgroup paths or secrets.",
+      "Apply optimizations automatically or rank from fewer than twelve comparable samples by default."
+    ],
+    "complexity": "L",
+    "estimatedMinutes": 30,
+    "budgets": {
+      "maxImplementationFiles": 15,
+      "maxAffectedComponents": 5,
+      "maxPublicInterfaceChanges": 3,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Observe existing counters without privilege, retain v1 reads, disclose attribution confidence and rank CPU, wall, energy or I/O independently.",
+      "components": [
+        {"name": "sample-and-observer", "paths": ["src/estimation/model.py", "src/estimation/monitor.py"]},
+        {"name": "analysis-interface", "paths": ["src/estimation/stats.py", "src/estimation/cli.py"]},
+        {"name": "verification", "paths": ["tests/**"]}
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": ["Emit v2 samples with optional telemetry.", "Add the opportunities CLI query.", "Accept an explicit bounded process revision."],
+      "dataChanges": ["Allow an optional bounded process_revision in v2 samples."],
+      "ui": {"impact": "none", "states": [], "evidence": []},
+      "rollback": "Stop emitting v2 and remove the query; existing append-only evidence remains readable."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {"criterion": "AC-02", "commands": ["PYTHONPATH=src python -m pytest -q"], "evidence": "bounded optional telemetry and v1 compatibility"},
+      {"criterion": "AC-03", "commands": ["PYTHONPATH=src python -m pytest -q"], "evidence": "objective-specific rankings and minimum sample gate"},
+      {"criterion": "AC-05", "commands": ["PYTHONPATH=src ./project/governance-check.sh"], "evidence": "repository governance passes"}
+    ]
+  }
+}

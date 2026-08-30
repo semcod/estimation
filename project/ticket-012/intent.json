@@ -1,0 +1,44 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-012",
+  "summary": "Add URI Process revision to sample v2 contract",
+  "workstream": "integration",
+  "classification": {
+    "kind": "FEATURE",
+    "priority": "P1",
+    "origin": "requested"
+  },
+  "placement": {
+    "home": "semcod",
+    "runtimeOwner": "semcod",
+    "shape": "runtime_service",
+    "adopt": ["wellmanifest/new-project", "wellmanifest/performance"]
+  },
+  "allowedPaths": ["project/ticket-012/**", "TODO.md", "project/TICKETS.md", "models/process-resource-sample.v2.schema.json"],
+  "forbiddenPaths": ["project/ticket-*/user-*.md"],
+  "stacks": [],
+  "dependsOn": ["ticket-010"],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "574136d797a61fe5b73645c6de46282b052229ee",
+    "targetBranch": "main",
+    "outcome": "The v2 sample contract accepts an optional bounded process revision for honest version-over-version comparisons.",
+    "nonGoals": ["Infer a revision from mutable command arguments.", "Require revision on legacy v2 samples.", "Capture repository paths or credentials."],
+    "complexity": "S",
+    "estimatedMinutes": 15,
+    "budgets": {"maxImplementationFiles": 5, "maxAffectedComponents": 2, "maxPublicInterfaceChanges": 1, "maxRuntimeDependencies": 1},
+    "architecture": {
+      "status": "accepted",
+      "decision": "Add one optional closed-schema process_revision field; producers must supply it explicitly.",
+      "components": [{"name": "sample-contract", "paths": ["models/process-resource-sample.v2.schema.json"]}],
+      "responsibilityChanges": false,
+      "interfaceChanges": ["Allow optional process_revision in sample v2."],
+      "dataChanges": ["Allow optional process_revision in v2 samples."],
+      "ui": {"impact": "none", "states": [], "evidence": []},
+      "rollback": "Remove the optional property; samples without it remain unchanged."
+    },
+    "runtimeDependencies": [],
+    "validation": [{"criterion": "AC-02", "commands": ["python -m json.tool models/process-resource-sample.v2.schema.json", "PYTHONPATH=src ./project/governance-check.sh"], "evidence": "Valid closed schema and governance"}]
+  }
+}

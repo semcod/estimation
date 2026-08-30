@@ -1,6 +1,6 @@
 {
   "schema": "semcod.estimation.operations/v1",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "operations": [
     {
       "id": "measure",
@@ -29,6 +29,13 @@
       "kind": "query",
       "risk": "R0",
       "effect": "Predict a bounded resource envelope for a quantity and parallelism."
+    },
+    {
+      "id": "opportunities",
+      "processUri": "estimation://history/query/opportunities",
+      "kind": "query",
+      "risk": "R0",
+      "effect": "Rank recurring URI Processes by one explicit resource objective without applying changes."
     }
   ]
 }

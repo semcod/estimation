@@ -1,0 +1,2 @@
+- Protected Validator approved and explicitly merged PR #6
+  at exact head `0a6260977b8e75de64e491b549c6d611995e037d`.

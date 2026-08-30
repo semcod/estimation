@@ -2,8 +2,8 @@
 
 - **ID**: ticket-011
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
-- **Workflow state**: VALIDATION
+- **Status**: DONE
+- **Workflow state**: DONE
 - **Created**: 2026-08-30
 
 ## Goal and scope
@@ -32,6 +32,12 @@ Accept an explicit process revision for version-over-version regression analysis
 - Runtime and CLI versions are regression-tested against package metadata.
 - The live host exposed shared cgroup/PSI evidence but no readable RAPL domain;
   energy was correctly marked unavailable.
+
+## Closure evidence
+
+- Trusted implementation SHA: `0a6260977b8e75de64e491b549c6d611995e037d`.
+- Protected Validator approved and explicitly merged PR #6.
+- Main integration SHA: `e207b5182d289bd2db2b33b2b6d7cd105551cf30`.
 
 ## Participants
 

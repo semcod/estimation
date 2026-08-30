@@ -34,6 +34,7 @@ def _parser() -> argparse.ArgumentParser:
 
     run = commands.add_parser("run", help="measure a caller-authorized command")
     _context(run)
+    run.add_argument("--quiet", action="store_true", help="persist the sample without printing it")
     run.add_argument("command", nargs=argparse.REMAINDER)
 
     observe = commands.add_parser("observe", help="observe an existing PID tree")
@@ -69,7 +70,8 @@ def _require_process_uri(value: str | None) -> str:
 
 def _write_sample(sample: Sample, args: argparse.Namespace) -> None:
     append_sample(sample, Path(args.store), Path(args.events))
-    print(json.dumps(sample.to_dict(), ensure_ascii=False, sort_keys=True))
+    if not getattr(args, "quiet", False):
+        print(json.dumps(sample.to_dict(), ensure_ascii=False, sort_keys=True))
 
 
 def main(argv: Sequence[str] | None = None) -> int:

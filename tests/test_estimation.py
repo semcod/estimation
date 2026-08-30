@@ -168,6 +168,18 @@ def test_cli_prints_opportunity_ranking(tmp_path: Path, capsys) -> None:
     assert result["ranking"][0]["process_key"] == "diagit://fleet/worktrees"
 
 
+def test_cli_quiet_run_persists_without_mixing_sample_into_stdout(tmp_path: Path, capfd) -> None:
+    store = tmp_path / "samples.jsonl"
+    events = tmp_path / "events.jsonl"
+    assert main([
+        "run", "--process-uri", "test://quiet/run", "--store", str(store),
+        "--events", str(events), "--interval", "0.01", "--quiet", "--",
+        sys.executable, "-c", "print('handler-output')",
+    ]) == 0
+    assert capfd.readouterr().out.strip() == "handler-output"
+    assert load_samples(store)[0].process_key == "test://quiet/run"
+
+
 def test_observe_current_process_is_bounded() -> None:
     sample = observe_pid(
         os.getpid(),

@@ -30,6 +30,8 @@ or cgroup attribution on a shared host. Keep measurement advisory and private.
   default gate, explicit units and an advisory-only result.
 - Added CLI coverage and passed fourteen tests, schema validation, a live smoke
   test and repository governance.
+- Added a quiet measurement mode for runtimes that must preserve the wrapped
+  process output channel while appending resource evidence.
 
 ## Blockers
 

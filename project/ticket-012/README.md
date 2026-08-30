@@ -2,8 +2,8 @@
 
 - **ID**: ticket-012
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
-- **Workflow state**: VALIDATION
+- **Status**: DONE
+- **Workflow state**: DONE
 - **Created**: 2026-08-30
 
 ## Goal and scope
@@ -19,7 +19,11 @@ revision identity from payload-bearing argv hashes.
 - [x] AC-02: The closed v2 schema accepts a bounded revision and still accepts
   existing v2 records without it.
 
-## Participants
-
 - Human participant: user:tom; no synthesized user file was created.
 - Agent participant: [ai-codex.md](ai-codex.md)
+
+## Closure evidence
+
+- Trusted implementation SHA: `c43e1eaac0a600c8a52d73a6639756353e00369c`.
+- Protected Validator approved and explicitly merged PR #9.
+- Main integration SHA: `4fbc1477fee93d72f14b13164b5f85a308a359b2`.

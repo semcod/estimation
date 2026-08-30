@@ -1,0 +1,69 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-010",
+  "summary": "Measure energy and rank URI Process optimization opportunities",
+  "workstream": "integration",
+  "classification": {
+    "kind": "FEATURE",
+    "priority": "P1",
+    "origin": "requested"
+  },
+  "placement": {
+    "home": "semcod",
+    "runtimeOwner": "semcod",
+    "shape": "runtime_service",
+    "adopt": ["wellmanifest/new-project", "wellmanifest/logs", "wellmanifest/performance"]
+  },
+  "allowedPaths": [
+    "project/ticket-010/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "VERSION",
+    "pyproject.toml",
+    "models/**",
+    "operations/**"
+  ],
+  "forbiddenPaths": ["project/ticket-*/user-*.md"],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "b70aa563d0c58e5a264938b001db83605f1f58d0",
+    "targetBranch": "main",
+    "outcome": "Versioned URI Process samples include bounded Linux energy and pressure observations, and a read-only query ranks recurring optimization opportunities by an explicit resource objective.",
+    "nonGoals": [
+      "Create or mutate cgroups, scheduling policy or process authorization.",
+      "Claim process-exclusive energy attribution from shared package counters.",
+      "Capture command arguments, output, environment values, cgroup paths or secrets.",
+      "Automatically apply an optimization from a single sample."
+    ],
+    "complexity": "L",
+    "estimatedMinutes": 30,
+    "budgets": {
+      "maxImplementationFiles": 15,
+      "maxAffectedComponents": 4,
+      "maxPublicInterfaceChanges": 3,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Keep measurement append-only and advisory: observe existing Linux counters without privilege, retain v1 reads, label attribution confidence, and rank savings independently for CPU, wall time, energy or I/O.",
+      "components": [
+        {"name": "package-metadata", "paths": ["VERSION", "pyproject.toml"]},
+        {"name": "sample-contract", "paths": ["models/**"]},
+        {"name": "operation-catalog", "paths": ["operations/**"]}
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": ["Add the v2 sample schema.", "Declare the opportunities Process URI."],
+      "dataChanges": ["Append v2 sample records; existing v1 JSONL remains readable."],
+      "ui": {"impact": "none", "states": [], "evidence": []},
+      "rollback": "Stop emitting v2 samples and remove the opportunities query; append-only v1 and v2 records remain auditable."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {"criterion": "AC-04", "commands": ["python -m json.tool models/process-resource-sample.v2.schema.json", "python -m json.tool operations/index.json"], "evidence": "versioned closed schema and operation catalog"},
+      {"criterion": "AC-05", "commands": ["PYTHONPATH=src ./project/governance-check.sh"], "evidence": "repository governance passes"}
+    ]
+  }
+}

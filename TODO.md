@@ -7,4 +7,4 @@
 
 ## Automatic Planfile synchronization — 2026-09-15
 
-- [ ] Add the reusable GitHub Actions caller workflow pinned to `v0.1.126` — ticket-015.
+- [x] Add the reusable GitHub Actions caller workflow pinned to `v0.1.126` — ticket-015.

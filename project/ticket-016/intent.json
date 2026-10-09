@@ -1,0 +1,74 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-016",
+  "summary": "add autoupdate support",
+  "workstream": "application",
+  "classification": {
+    "kind": "SERVICE",
+    "priority": "P2",
+    "origin": "health"
+  },
+  "allowedPaths": [
+    "project/ticket-016/**",
+    "TODO.md",
+    "project/TICKETS.md",
+    "src/**",
+    "tests/**"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md"
+  ],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "bc56f748dbde153c7e77c504b3de9d0c62860b8f",
+    "targetBranch": "main",
+    "outcome": "Add autoupdate support to estimation CLI.",
+    "nonGoals": [
+      "Automatically run pip install in background.",
+      "Block CLI startup on network checks."
+    ],
+    "complexity": "XS",
+    "estimatedMinutes": 10,
+    "budgets": {
+      "maxImplementationFiles": 2,
+      "maxAffectedComponents": 1,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Check PyPI version non-blockingly and print notice to stderr.",
+      "components": [
+        {
+          "name": "autoupdate",
+          "paths": [
+            "src/estimation/autoupdate.py",
+            "src/estimation/cli.py"
+          ]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Remove autoupdate invocation from cli.py."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-01",
+        "commands": [
+          "./project/governance-check.sh"
+        ],
+        "evidence": "Governance check passes."
+      }
+    ]
+  }
+}

@@ -77,6 +77,11 @@ def _write_sample(sample: Sample, args: argparse.Namespace) -> None:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    try:
+        from .autoupdate import check_for_updates
+        check_for_updates("estimation")
+    except Exception:
+        pass
     args = _parser().parse_args(list(argv) if argv is not None else None)
     try:
         if args.command_name == "run":

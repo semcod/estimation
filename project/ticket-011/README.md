@@ -2,7 +2,7 @@
 
 - **ID**: ticket-011
 - **Owner**: unresolved:human
-- **Status**: IN_PROGRESS
+- **Status**: DONE
 - **Workflow state**: VALIDATION
 - **Created**: 2026-08-30
 

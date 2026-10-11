@@ -50,6 +50,7 @@
           "CHANGELOG.md",
           ".env.example",
           "goal.yaml",
+          "LICENSE*",
           "project.sh",
           "project.bat",
           "project/**",

@@ -1,0 +1,83 @@
+{
+  "schema": "new-project.intent/v3",
+  "ticket": "ticket-018",
+  "summary": "Remediate PERF-AUDIT findings and adopt Wellmanifest standards",
+  "workstream": "interfaces",
+  "classification": {
+    "kind": "BUG",
+    "priority": "P2",
+    "origin": "health"
+  },
+  "allowedPaths": [
+    ".governance/manifest.json",
+    ".governance/standard-adoption.json",
+    ".governance/standard-packs.json",
+    ".governance/standard_pack_check.py",
+    "TODO.md",
+    "project/TICKETS.md",
+    "project/ticket-016/README.md",
+    "project/ticket-018/**",
+    "src/estimation/monitor.py"
+  ],
+  "forbiddenPaths": [
+    "project/ticket-*/user-*.md"
+  ],
+  "stacks": [],
+  "dependsOn": [],
+  "conflictsWith": [],
+  "integrationTicket": null,
+  "delivery": {
+    "acceptedBaseSha": "0c1db19afbf1e979479ab62a74ed650d8853819c",
+    "targetBranch": "main",
+    "outcome": "Remediate all PERF-AUDIT findings in src/estimation/monitor.py and adopt Wellmanifest baseline standard-pack conformance.",
+    "nonGoals": [
+      "Change public CLI or estimation calculation semantics",
+      "Modify runtime dependencies"
+    ],
+    "complexity": "S",
+    "estimatedMinutes": 15,
+    "budgets": {
+      "maxImplementationFiles": 5,
+      "maxAffectedComponents": 2,
+      "maxPublicInterfaceChanges": 0,
+      "maxRuntimeDependencies": 0
+    },
+    "architecture": {
+      "status": "accepted",
+      "decision": "Pass explicit default paths at internal helper call sites in src/estimation/monitor.py and record baseline Wellmanifest standard-adoption bindings.",
+      "components": [
+        {
+          "name": "monitor",
+          "paths": [
+            "src/estimation/monitor.py",
+            ".governance/manifest.json",
+            ".governance/standard-adoption.json",
+            ".governance/standard-packs.json",
+            ".governance/standard_pack_check.py"
+          ]
+        }
+      ],
+      "responsibilityChanges": false,
+      "interfaceChanges": [],
+      "dataChanges": [],
+      "ui": {
+        "impact": "none",
+        "states": [],
+        "evidence": []
+      },
+      "rollback": "Revert commit on ticket/018-remediate-perf-audit-and-adopt-standards."
+    },
+    "runtimeDependencies": [],
+    "validation": [
+      {
+        "criterion": "AC-01",
+        "commands": [
+          "python3 .governance/standard_pack_check.py --root .",
+          "./project/governance-check.sh",
+          "pytest -q"
+        ],
+        "evidence": "0 PERF-AUDIT findings, 0 standard-pack findings, all tests and governance checks pass."
+      }
+    ]
+  }
+}

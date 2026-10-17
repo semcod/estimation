@@ -86,7 +86,8 @@
         "ownedPaths": [
           "api/**",
           "sdk/**",
-          "clients/**"
+          "clients/**",
+          "src/estimation/monitor.py"
         ]
       }
     }
@@ -168,6 +169,10 @@
     "TODO.md",
     "project/TICKETS.md",
     "project/ticket-*/**",
+    ".governance/manifest.json",
+    ".governance/standard-adoption.json",
+    ".governance/standard-packs.json",
+    ".governance/standard_pack_check.py",
     "config/artifact-registry.json"
   ],
   "repository": {

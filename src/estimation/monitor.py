@@ -139,12 +139,12 @@ class LinuxObservation:
 
     @classmethod
     def start(cls, pid: int) -> "LinuxObservation":
-        directory = _cgroup_directory(pid)
+        directory = _cgroup_directory(pid, root=CGROUP_ROOT)
         return cls(pid=pid, cgroup_directory=directory, cgroup=_cgroup_snapshot(directory))
 
     def finish(self, process_cpu_seconds: float) -> tuple[dict[str, object], dict[str, object]]:
-        package_joules, domains = _rapl_delta(self.rapl, _rapl_snapshot())
-        host_end = _host_cpu_seconds()
+        package_joules, domains = _rapl_delta(self.rapl, _rapl_snapshot(root=POWER_CAP_ROOT))
+        host_end = _host_cpu_seconds(path=Path("/proc/stat"))
         host_delta = None if self.host_cpu_seconds is None or host_end is None else max(0.0, host_end - self.host_cpu_seconds)
         if package_joules is not None and host_delta and process_cpu_seconds >= 0:
             energy = {
